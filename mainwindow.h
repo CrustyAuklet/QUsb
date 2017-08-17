@@ -16,9 +16,16 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+protected:
+    void scrollWindow();
+
 private slots:
-    void devConnect(QString name);
-    void devDisconnect(QString name);
+    void USBConnect(usb_id dev);
+    void USBDisconnect(usb_id dev);
+    void PortConnect(QString name);
+    void PortDisconnect(QString name);
+    void on_DevListenStart_clicked();
+    void on_DevListen_stop_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -8,38 +8,69 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    usbAlert.Start();
 
-    connect(&this->usbAlert, &qUSBListener::DeviceConnected,
-            this, &this->devConnect);
-    connect(&this->usbAlert, &qUSBListener::DeviceDisconnected,
-            this, &this->devDisconnect);
+    connect(&this->usbAlert, &qUSBListener::USBConnected,
+            this, &this->USBConnect);
+    connect(&this->usbAlert, &qUSBListener::USBDisconnected,
+            this, &this->USBDisconnect);
     connect(&this->usbAlert, &qUSBListener::PortConnected,
-            this, &this->devConnect);
+            this, &this->PortConnect);
     connect(&this->usbAlert, &qUSBListener::PortDisconnected,
-            this, &this->devDisconnect);
+            this, &this->PortDisconnect);
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::devConnect(QString name) {
-    ui->plainTextEdit->insertPlainText(QString("CONNECT: "));
-    ui->plainTextEdit->insertPlainText(name);
-    ui->plainTextEdit->insertPlainText(QString("\n\n"));
-
+void MainWindow::scrollWindow() {
     QTextCursor c  = ui->plainTextEdit->textCursor();
     c.movePosition(QTextCursor::End);
     ui->plainTextEdit->setTextCursor(c);
 }
 
-void MainWindow::devDisconnect(QString name) {
+void MainWindow::USBConnect(usb_id dev) {
+    ui->plainTextEdit->insertPlainText(QString("USB DEVICE CONNECTED: \n"));
+    ui->plainTextEdit->insertPlainText(QString("    VID: 0x%1 \n").arg(dev.VID, 4, 16, QLatin1Char('0') ));
+    ui->plainTextEdit->insertPlainText(QString("    PID: 0x%1 \n").arg(dev.PID, 4, 16, QLatin1Char('0') ));
+    ui->plainTextEdit->insertPlainText("    S\\N: ");
+    ui->plainTextEdit->insertPlainText(dev.serialNum);
+    ui->plainTextEdit->insertPlainText(QString("\n\n"));
+
+    scrollWindow();
+}
+
+void MainWindow::USBDisconnect(usb_id dev) {
+    ui->plainTextEdit->insertPlainText(QString("USB DEVICE DISCONNECTED: \n"));
+    ui->plainTextEdit->insertPlainText(QString("    VID: 0x%1 \n").arg(dev.VID, 4, 16, QLatin1Char('0') ));
+    ui->plainTextEdit->insertPlainText(QString("    PID: 0x%1 \n").arg(dev.PID, 4, 16, QLatin1Char('0') ));
+    ui->plainTextEdit->insertPlainText("    S\\N: ");
+    ui->plainTextEdit->insertPlainText(dev.serialNum);
+    ui->plainTextEdit->insertPlainText(QString("\n\n"));
+
+    scrollWindow();
+}
+
+void MainWindow::PortConnect(QString name) {
+    ui->plainTextEdit->insertPlainText(QString("CONNECT: "));
+    ui->plainTextEdit->insertPlainText(name);
+    ui->plainTextEdit->insertPlainText(QString("\n\n"));
+
+    scrollWindow();
+}
+
+void MainWindow::PortDisconnect(QString name) {
     ui->plainTextEdit->insertPlainText(QString("DISCONNECT: "));
     ui->plainTextEdit->insertPlainText(name);
     ui->plainTextEdit->insertPlainText(QString("\n\n"));
 
-    QTextCursor c  = ui->plainTextEdit->textCursor();
-    c.movePosition(QTextCursor::End);
-    ui->plainTextEdit->setTextCursor(c);
+    scrollWindow();
+}
+
+void MainWindow::on_DevListenStart_clicked() {
+    usbAlert.Start();
+}
+
+void MainWindow::on_DevListen_stop_clicked() {
+    usbAlert.Stop();
 }
