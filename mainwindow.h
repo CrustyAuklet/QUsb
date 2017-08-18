@@ -20,8 +20,8 @@ protected:
     void scrollWindow();
 
 private slots:
-    void USBConnect(usb_id dev);
-    void USBDisconnect(usb_id dev);
+    void USBConnect(dbcc_name_usb dev);
+    void USBDisconnect(dbcc_name_usb dev);
     void PortConnect(QString name);
     void PortDisconnect(QString name);
     void on_DevListenStart_clicked();
