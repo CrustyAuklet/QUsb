@@ -29,7 +29,7 @@ void MainWindow::scrollWindow() {
     ui->plainTextEdit->setTextCursor(c);
 }
 
-void MainWindow::USBConnect(usb_id dev) {
+void MainWindow::USBConnect(dbcc_name_usb dev) {
     ui->plainTextEdit->insertPlainText(QString("USB DEVICE CONNECTED: \n"));
     ui->plainTextEdit->insertPlainText(QString("    VID: 0x%1 \n").arg(dev.VID, 4, 16, QLatin1Char('0') ));
     ui->plainTextEdit->insertPlainText(QString("    PID: 0x%1 \n").arg(dev.PID, 4, 16, QLatin1Char('0') ));
@@ -40,7 +40,7 @@ void MainWindow::USBConnect(usb_id dev) {
     scrollWindow();
 }
 
-void MainWindow::USBDisconnect(usb_id dev) {
+void MainWindow::USBDisconnect(dbcc_name_usb dev) {
     ui->plainTextEdit->insertPlainText(QString("USB DEVICE DISCONNECTED: \n"));
     ui->plainTextEdit->insertPlainText(QString("    VID: 0x%1 \n").arg(dev.VID, 4, 16, QLatin1Char('0') ));
     ui->plainTextEdit->insertPlainText(QString("    PID: 0x%1 \n").arg(dev.PID, 4, 16, QLatin1Char('0') ));
@@ -68,9 +68,9 @@ void MainWindow::PortDisconnect(QString name) {
 }
 
 void MainWindow::on_DevListenStart_clicked() {
-    usbAlert.Start();
+    usbAlert.start();
 }
 
 void MainWindow::on_DevListen_stop_clicked() {
-    usbAlert.Stop();
+    usbAlert.stop();
 }

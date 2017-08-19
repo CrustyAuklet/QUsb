@@ -5,11 +5,17 @@
 #include <windows.h>
 #include <dbt.h>
 
-struct usb_id {
+class dbcc_name_usb {
+public:
+    dbcc_name_usb();
+    dbcc_name_usb(uint16_t vid, uint16_t pid, QString sn);
+    bool operator==(const dbcc_name_usb &other) const;
+    bool operator!=(const dbcc_name_usb &other) const;
+
     uint16_t VID;
     uint16_t PID;
     QString  serialNum;
-    GUID     class_guid;
+    //GUID     class_guid;
 };
 
 class qUSBListener : public QMainWindow
@@ -18,12 +24,12 @@ class qUSBListener : public QMainWindow
 
 public:
     qUSBListener();
-    bool Start();
-    bool Stop();
+    bool start(const uint16_t vid = 0, const uint16_t pid = 0, const QString sn = "");
+    bool stop();
 
 signals:
-    void USBConnected(usb_id name);
-    void USBDisconnected(usb_id name);
+    void USBConnected(dbcc_name_usb name);
+    void USBDisconnected(dbcc_name_usb name);
     void PortConnected(QString portName);
     void PortDisconnected(QString portName);
 
@@ -32,11 +38,12 @@ protected:
                              void * message,
                              long * result);
 
-    bool getDevData(LPARAM lParamDev, usb_id &newDevice);
+    bool getDevData(LPARAM lParamDev, dbcc_name_usb &newDevice);
     inline QString getQstring(void* stringPtr);
 
 private:
-    HDEVNOTIFY devNotify;
+    HDEVNOTIFY      devNotify;
+    dbcc_name_usb*  targetDev;
 };
 
 #endif // QUSBLISTENER_H
