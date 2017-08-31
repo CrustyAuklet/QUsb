@@ -1,5 +1,5 @@
 # qUSBListener
 libusb wrapper for Qt including (windows focused for now):
   - hotplug detection
-  - MCV model
+  - MVC model for a device list
   - libusb wrapper (eventually)
