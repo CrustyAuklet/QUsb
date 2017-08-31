@@ -1,38 +1,7 @@
-#include "qUSBListener.h"
 #include <QDebug>
 #include <QRegularExpression>
 #include <QStringList>
-
-/*********************************************************************************************
- * DBCC USB DEVICE CLASS FOR LISTING DEVICES
- *********************************************************************************************/
-
-dbcc_name_usb::dbcc_name_usb() {
-    VID       = 0;
-    PID       = 0;
-    serialNum.clear();
-}
-
-dbcc_name_usb::dbcc_name_usb(uint16_t vid, uint16_t pid, QString sn) {
-    VID       = vid;
-    PID       = pid;
-    serialNum = sn;
-}
-
-bool dbcc_name_usb::operator==(const dbcc_name_usb &other) const {
-    bool vidMatch = other.VID == 0 || this->VID == other.VID;
-    bool pidMatch = other.PID == 0 || this->PID == other.PID;
-    bool snMatch  = other.serialNum.isEmpty() || this->serialNum == other.serialNum;
-    return vidMatch && pidMatch && snMatch;
-}
-
-bool dbcc_name_usb::operator!=(const dbcc_name_usb &other) const {
-    return !(*this == other);
-}
-
-/*********************************************************************************************
- * USB LISTENER CLASS
- *********************************************************************************************/
+#include "qUSBListener.h"
 
 qUSBListener::qUSBListener() : QMainWindow() {
     devNotify = NULL;
@@ -40,7 +9,7 @@ qUSBListener::qUSBListener() : QMainWindow() {
 }
 
 bool qUSBListener::start(const uint16_t vid, const uint16_t pid, const QString sn) {
-    targetDev = new dbcc_name_usb(vid, pid, sn);
+    targetDev = new usbDevice(vid, pid, sn);
 
     GUID usbGUID[] = {
         { 0xa5dcbf10, 0x6530, 0x11d2, { 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed } },     // All USB Devices
@@ -125,7 +94,7 @@ bool qUSBListener::nativeEvent(const QByteArray & eventType,
             // recast the lParam based on device type https://msdn.microsoft.com/en-us/library/aa363246(v=vs.85).aspx
             // we only really care about the device interfaces (Ports might also be interesting, for COM devices)
             if(reinterpret_cast<DEV_BROADCAST_HDR*>(msg->lParam)->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE) {
-                dbcc_name_usb newDev;
+                usbDevice newDev;
                 if(getDevData(msg->lParam, newDev)) {
                     emit this->USBConnected(newDev);
                 }
@@ -138,7 +107,7 @@ bool qUSBListener::nativeEvent(const QByteArray & eventType,
         else if(msg->wParam == DBT_DEVICEREMOVECOMPLETE) {
 
             if(reinterpret_cast<DEV_BROADCAST_HDR*>(msg->lParam)->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE) {
-                dbcc_name_usb newDev;
+                usbDevice newDev;
                 if(getDevData(msg->lParam, newDev)) {
                     emit this->USBDisconnected(newDev);
                 }
@@ -154,7 +123,7 @@ bool qUSBListener::nativeEvent(const QByteArray & eventType,
     return false;
 }
 
-bool qUSBListener::getDevData(LPARAM lParamDev, dbcc_name_usb &newDevice) {
+bool qUSBListener::getDevData(LPARAM lParamDev, usbDevice &newDevice) {
     bool success = false;       // return value
     DEV_BROADCAST_DEVICEINTERFACE* deviceStruct = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE*>(lParamDev);
 
