@@ -26,11 +26,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    qUSBListener.cpp
+        qUSBListener.cpp \
+        usbdevice.cpp \
+        usbdevicelistmodel.cpp
 
 HEADERS += \
         mainwindow.h \
-    qUSBListener.h
+        qUSBListener.h \
+        usbdevice.h \
+        usb_standard.h \
+        usbdevicelistmodel.h
 
 FORMS += \
         mainwindow.ui

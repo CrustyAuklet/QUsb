@@ -23,21 +23,23 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
 
     /// gets the device at a specific index
     usbDevice getDevice(const int row);
 
 signals:
-    /// pleads someone, anyone, for an update. usually timer based.
-    void updateMePlease();
 
 public slots:
     /// updates the data in the model by erasing the old data and replacing it
-    void updateData(QVector<usbDevice> devList);
+    void replaceData(QVector<usbDevice> devList);
+    /// adds a single USB device to the list
+    void addDevice(usbDevice attachedDev);
+    /// removes a single USB device from the list
+    void removeDevice(usbDevice removedDev);
 
 private:
     QVector<usbDevice> deviceList;  // list of USB devices
-    int                timerID;     // ID for refresh timer
 };
 
 #endif // USBDEVICELISTMODEL_H

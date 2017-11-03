@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "qUSBListener.h"
+#include "usbdevicelistmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -20,16 +21,15 @@ protected:
     void scrollWindow();
 
 private slots:
-    void USBConnect(dbcc_name_usb dev);
-    void USBDisconnect(dbcc_name_usb dev);
+    void USBConnect(usbDevice dev);
+    void USBDisconnect(usbDevice dev);
     void PortConnect(QString name);
     void PortDisconnect(QString name);
-    void on_DevListenStart_clicked();
-    void on_DevListen_stop_clicked();
 
 private:
     Ui::MainWindow *ui;
-    qUSBListener usbAlert;
+    qUSBListener usbAlert;          // class for listening for USB hotplug events
+    UsbDeviceListModel  deviceList; // MVC model for USB list
 };
 
 #endif // MAINWINDOW_H

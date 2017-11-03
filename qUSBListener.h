@@ -2,6 +2,7 @@
 #define QUSBLISTENER_H
 
 #include <QMainWindow>
+#include <QVector>
 #include <windows.h>
 #include <dbt.h>
 #include "usbdevice.h"
@@ -13,6 +14,7 @@ public:
     qUSBListener();
     bool start(const uint16_t vid = 0, const uint16_t pid = 0, const QString sn = "");
     bool stop();
+    QVector<usbDevice> getDevList();
 
 signals:
     void USBConnected(usbDevice name);

@@ -1,7 +1,10 @@
 #include <QDebug>
 #include <QRegularExpression>
-#include <QStringList>
 #include "qUSBListener.h"
+
+//#include <tchar.h>
+//#include <setupapi.h>
+//#include <initguid.h>
 
 qUSBListener::qUSBListener() : QMainWindow() {
     devNotify = NULL;
@@ -64,6 +67,68 @@ bool qUSBListener::stop() {
     }
     return success;
 }
+
+//QVector<usbDevice> qUSBListener::getDevList() {
+//    HDEVINFO                         hDevInfo;
+//    SP_DEVICE_INTERFACE_DATA         DevIntfData;
+//    PSP_DEVICE_INTERFACE_DETAIL_DATA DevIntfDetailData;
+//    SP_DEVINFO_DATA                  DevData;
+
+//    DWORD dwSize;
+//    DWORD dwMemberIdx;
+
+//    GUID usbGUID = {0xa5dcbf10, 0x6530, 0x11d2, {0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed}};
+
+//    // We will try to get device information set for all USB devices that have a
+//    // device interface and are currently present on the system (plugged in).
+//    hDevInfo = SetupDiGetClassDevs(&usbGUID, NULL, 0, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
+
+//    if (hDevInfo != INVALID_HANDLE_VALUE) {
+//        // Prepare to enumerate all device interfaces for the device information
+//        // set that we retrieved with SetupDiGetClassDevs(..)
+//        DevIntfData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+//        dwMemberIdx = 0;
+
+//        // Next, we will keep calling this SetupDiEnumDeviceInterfaces(..) until this
+//        // function causes GetLastError() to return  ERROR_NO_MORE_ITEMS. With each
+//        // call the dwMemberIdx value needs to be incremented to retrieve the next
+//        // device interface information.
+//        SetupDiEnumDeviceInterfaces(hDevInfo, NULL, &usbGUID, dwMemberIdx, &DevIntfData);
+
+//        while(GetLastError() != ERROR_NO_MORE_ITEMS) {
+//            // As a last step we will need to get some more details for each
+//            // of device interface information we are able to retrieve. This
+//            // device interface detail gives us the information we need to identify
+//            // the device (VID/PID), and decide if it's useful to us. It will also
+//            // provide a DEVINFO_DATA structure which we can use to know the serial
+//            // port name for a virtual com port.
+//            DevData.cbSize = sizeof(DevData);
+
+//            // Get the required buffer size. Call SetupDiGetDeviceInterfaceDetail with
+//            // a NULL DevIntfDetailData pointer, a DevIntfDetailDataSize
+//            // of zero, and a valid RequiredSize variable. In response to such a call,
+//            // this function returns the required buffer size at dwSize.
+//            SetupDiGetDeviceInterfaceDetail(hDevInfo, &DevIntfData, NULL, 0, &dwSize, NULL);
+
+//            // Allocate memory for the DeviceInterfaceDetail struct. Don't forget to
+//            // deallocate it later!
+//            DevIntfDetailData = reinterpret_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA>(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwSize));
+//            DevIntfDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+//            if (SetupDiGetDeviceInterfaceDetail(hDevInfo, &DevIntfData, DevIntfDetailData, dwSize, &dwSize, &DevData))
+//            {
+//                qDebug() << getQstring((TCHAR*)DevIntfDetailData->DevicePath);
+//            }
+
+//            HeapFree(GetProcessHeap(), 0, DevIntfDetailData);
+
+//            // Continue looping
+//            SetupDiEnumDeviceInterfaces(hDevInfo, NULL, &usbGUID, ++dwMemberIdx, &DevIntfData);
+//        }
+
+//        SetupDiDestroyDeviceInfoList(hDevInfo);
+//    }
+//}
 
 bool qUSBListener::nativeEvent(const QByteArray & eventType,
                                     void * message,

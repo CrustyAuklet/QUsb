@@ -1,7 +1,9 @@
+#include <algorithm>
 #include "usbdevicelistmodel.h"
 
+
 UsbDeviceListModel::UsbDeviceListModel(QObject *parent)
-    : QAbstractTableModel(parent), timerID(0)
+    : QAbstractTableModel(parent)
 { }
 
 int UsbDeviceListModel::rowCount(const QModelIndex &parent) const {
@@ -89,9 +91,82 @@ QVariant UsbDeviceListModel::headerData(int section, Qt::Orientation orientation
     return QVariant();
 }
 
-void UsbDeviceListModel::updateData(QVector<usbDevice> devList) {
+void UsbDeviceListModel::sort(int column, Qt::SortOrder order) {
+    emit layoutAboutToBeChanged();
+
+    switch(column) {
+    case USB_DEV_VID:
+        if(order == Qt::DescendingOrder) {
+            std::sort(deviceList.begin(), deviceList.end(), [](const usbDevice &l, const usbDevice &r){return l.VID > r.VID;});
+        }
+        else {
+            std::sort(deviceList.begin(), deviceList.end(), [](const usbDevice &l, const usbDevice &r){return l.VID < r.VID;});
+        }
+        break;
+
+    case USB_DEV_PID:
+        if(order == Qt::DescendingOrder) {
+            std::sort(deviceList.begin(), deviceList.end(), [](const usbDevice &l, const usbDevice &r){return l.PID > r.PID;});
+        }
+        else {
+            std::sort(deviceList.begin(), deviceList.end(), [](const usbDevice &l, const usbDevice &r){return l.PID < r.PID;});
+        }
+        break;
+
+    case USB_DEV_SERIAL_NUMBER_STR:
+        if(order == Qt::DescendingOrder) {
+            std::sort(deviceList.begin(), deviceList.end(), [](const usbDevice &l, const usbDevice &r){return l.serialNum > r.serialNum;});
+        }
+        else {
+            std::sort(deviceList.begin(), deviceList.end(), [](const usbDevice &l, const usbDevice &r){return l.serialNum < r.serialNum;});
+        }
+        break;
+
+    case USB_DEV_MANUFACTURER_STR:
+        if(order == Qt::DescendingOrder) {
+            std::sort(deviceList.begin(), deviceList.end(), [](const usbDevice &l, const usbDevice &r){return l.Manufacturer > r.Manufacturer;});
+        }
+        else {
+            std::sort(deviceList.begin(), deviceList.end(), [](const usbDevice &l, const usbDevice &r){return l.Manufacturer < r.Manufacturer;});
+        }
+        break;
+
+    case USB_DEV_PRODUCT_STR:
+        if(order == Qt::DescendingOrder) {
+            std::sort(deviceList.begin(), deviceList.end(), [](const usbDevice &l, const usbDevice &r){return l.Product > r.Product;});
+        }
+        else {
+            std::sort(deviceList.begin(), deviceList.end(), [](const usbDevice &l, const usbDevice &r){return l.Product < r.Product;});
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    emit layoutChanged();
+}
+
+void UsbDeviceListModel::replaceData(QVector<usbDevice> devList) {
     deviceList = devList;
     emit dataChanged(index(0,0), index(USB_DEV_ITEM_COUNT-1, deviceList.count()-1) );
+}
+
+void UsbDeviceListModel::addDevice(usbDevice attachedDev) {
+    if(!deviceList.contains(attachedDev)) {
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        deviceList.append(attachedDev);
+        endInsertRows();
+    }
+}
+
+void UsbDeviceListModel::removeDevice(usbDevice removedDev) {
+    int index = deviceList.indexOf(removedDev);
+    if(index >= 0) {
+        beginRemoveRows(QModelIndex(), index, index);
+        deviceList.remove(index);
+        endRemoveRows();
+    }
 }
 
 usbDevice UsbDeviceListModel::getDevice(const int row) {
